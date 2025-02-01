@@ -6,5 +6,4 @@ psutil
 pycryptodome
 PyOpenGL
 pywin32
-win32con
 win32gui
