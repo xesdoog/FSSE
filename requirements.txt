@@ -1,0 +1,10 @@
+glfw
+imgui
+opencv-python
+pillow
+psutil
+pycryptodome
+PyOpenGL
+pywin32
+win32con
+win32gui
