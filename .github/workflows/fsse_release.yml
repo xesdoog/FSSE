@@ -103,7 +103,7 @@ jobs:
             let oldTag;
             if (tags.data.length === 0) {
               console.log('No existing tags found. Starting with version v1.0.1');
-              newVersion = 'v1.0.1';
+              newVersion = 'v1.0.0';
             } else {
               const latestTag = tags.data[0].name;
               const versionParts = latestTag.substring(1).split('.').map(Number);
