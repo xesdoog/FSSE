@@ -1,4 +1,7 @@
 import sys
+if getattr(sys, 'frozen', False):
+    import pyi_splash # type: ignore
+
 from pathlib import Path
 from src.Utils import sav, utils
 from win32gui import FindWindow, SetForegroundWindow
@@ -6,17 +9,14 @@ from win32gui import FindWindow, SetForegroundWindow
 PARENT_PATH = Path(__file__).parent
 ASSETS_PATH = PARENT_PATH / Path(r"src/assets")
 LOG         = utils.LOGGER()
-config_file = PARENT_PATH / Path("tenebris.json")
 this_window = FindWindow(None, "FSSE - Fallout Shelter Save Editor")
 
 if this_window != 0:
     LOG.warning("FSSE is aleady running! Only one instance can be launched at once.\n")
     SetForegroundWindow(this_window)
     sys.exit(0)
-LOG.OnStart(PARENT_PATH)
 
-if getattr(sys, 'frozen', False):
-    import pyi_splash
+LOG.OnStart(PARENT_PATH)
 
 
 def res_path(path: str) -> Path:
@@ -55,7 +55,7 @@ def OnDraw():
     dweller_names = []
     game_modes    = ["Normal", "Survival"]
     imgui.create_context()
-    window, text_cursor = gui.new_window("FSSE - Fallout Shelter Save Editor", 300, 300)
+    window, text_cursor = gui.new_window("FSSE - Fallout Shelter Save Editor", 300, 300, False)
     impl = GlfwRenderer(window)
     font_scaling_factor = gui.fb_to_window_factor(window)
     io = imgui.get_io()
@@ -82,13 +82,11 @@ def OnDraw():
     )
 
     impl.refresh_font_texture()
-    
 
     while not gui.glfw.window_should_close(window):
         gui.glfw.poll_events()
         impl.process_inputs()
         imgui.new_frame()
-
         win_w, win_h = gui.glfw.get_window_size(window)
         imgui.set_next_window_size(win_w, win_h)
         imgui.set_next_window_position(0, 0)
@@ -190,6 +188,7 @@ def OnDraw():
                             vault["VaultMode"] = game_modes[game_mode_index]
 
                         imgui.end_tab_item()
+
                     if imgui.begin_tab_item("Lunchboxes").selected:
                         with imgui.font(subtitle_font):
                             imgui.text(f"Total Boxes: [ {all_lunchbox_count} ]")
@@ -296,8 +295,6 @@ def OnDraw():
                             total_xp   = int(dwellers[dweller_index]["experience"]["experienceValue"])
                             curr_level = int(dwellers[dweller_index]["experience"]["currentLevel"])
                             imgui.dummy(1, 10)
-                            imgui.push_item_width(200)
-
                             imgui.text(f"Gender:        {gender}")
                             imgui.text(f"Health:          {health}")
                             if health < 100:
@@ -316,6 +313,7 @@ def OnDraw():
                             imgui.text("Happiness: ")
                             content_region = imgui.get_content_region_available_width()
                             imgui.same_line(spacing = content_region / 6)
+                            imgui.push_item_width(200)
                             happiness_changed, happiness = imgui.slider_int("##happiness", happiness, 10, 100)
                             if happiness_changed:
                                 dwellers[dweller_index]["happiness"]["happinessValue"] = happiness
@@ -344,10 +342,10 @@ def OnDraw():
                             imgui.pop_item_width()
                         else:
                             imgui.text("Vault has no dwellers.")
+
                         imgui.end_tab_item()
                     imgui.end_tab_bar()
                 imgui.end_child()
-
             imgui.dummy(1, 5)
             if imgui.button(f"{Icons.Save}  Save Changes"):
                 try:
@@ -385,10 +383,8 @@ def OnDraw():
         imgui.pop_style_color(9)
         imgui.pop_style_var(5)
         imgui.end()
-
         gui.gl.glClearColor(1.0, 1.0, 1.0, 1)
         gui.gl.glClear(gui.gl.GL_COLOR_BUFFER_BIT)
-
         imgui.render()
         impl.render(imgui.get_draw_data())
         gui.glfw.swap_buffers(window)

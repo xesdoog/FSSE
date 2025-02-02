@@ -1,6 +1,5 @@
 glfw
 imgui
-opencv-python
 pillow
 psutil
 pycryptodome

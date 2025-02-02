@@ -24,6 +24,7 @@ def decrypt_sav(base64_str: str):
 
 def encrypt_sav(json_data: object):
     """Encrypts a JSON object into a Base64-encoded .sav file."""
+
     json_string  = json.dumps(json_data, indent = 4)
     plain_bytes  = json_string.encode("utf-8")
     pad_length   = AES.block_size - (len(plain_bytes) % AES.block_size)
@@ -38,12 +39,13 @@ def read_save_file(path: str):
     """Reads Fallout Shelter's Vault*.sav files, decrypts the content and returns it as JSON."""
     with open(path, "r") as f:
         base64_string = f.read().strip()
+        f.close()
         return decrypt_sav(base64_string)
 
 
 def write_save_file(path: str, json_data: object):
     if not path:
-        path = './Vault1.sav'
+        path = './VaultX.sav'
 
     with open(path, "w") as f:
         base64_data = encrypt_sav(json_data)

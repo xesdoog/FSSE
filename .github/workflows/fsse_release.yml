@@ -14,12 +14,22 @@ jobs:
     name: Build FSSE
     outputs:
       full_sha: ${{ steps.var.outputs.full_sha }}
+
     steps:
-    - uses: actions/checkout@v4
+
+    - name: Checkout Repo
+      uses: actions/checkout@v4
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
+
+    - name: Crate Build Environment
+      shell: pwsh
+      run: |
+        python -m venv ./build_env
+        cd ./build_env/Scripts
+        .\Activate.ps1
 
     - name: Install dependencies
       run: |
@@ -36,7 +46,7 @@ jobs:
 
     - name: Build Executable
       run: |
-        pyinstaller "fsse.py" --noconfirm --onefile --windowed --name "FSSE" --clean --version-file "./version.txt" --icon "./src/assets/img/fs_icon.png" --splash "./src/assets/img/fs_splash.png" --add-data "./src;src/" --hidden-import "libglfw3" --hidden-import "libglfw3-dev" --add-binary "./src/dll/glfw3.dll;." --add-binary "./src/dll/msvcr110.dll;."
+        pyinstaller "fsse.py" --noconfirm --onefile --windowed --name "FSSE" --clean --version-file "./version.txt" --icon "./src/assets/img/fs_icon.png" --splash "./src/assets/img/fs_splash.png" --add-data "./src;src/" --add-binary "./src/assets/dll/glfw3.dll;." --add-binary "./src/assets/dll/msvcr110.dll;."
 
     - name: Generate Build Info
       id: var
@@ -131,6 +141,5 @@ jobs:
               >**This automatic release was built by Github Actions**
               >| [Link to build](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |
               >| ------------- |
-
           files: |
             FSSE.exe
