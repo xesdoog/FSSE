@@ -1,5 +1,6 @@
 glfw
 imgui
+numpy
 pillow
 psutil
 pycryptodome
